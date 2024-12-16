@@ -1,0 +1,64 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: url('https://64.media.tumblr.com/343bee024bbbba5239af34c548709b0c/tumblr_ojztc0uKA31u8kxcgo1_1280.jpg') no-repeat;
+    background-position: bottom;
+    background-size: cover;
+}
+
+.players {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 230vh;
+    margin-bottom: -23%;
+}
+
+.GK,
+.CB1, .CB2, .RB, .LB,
+.RM, .LM, .CM,
+.RW, .LW, .ST {
+    width: 8vw;
+    height: 16vw;
+    background-image: url('https://selimdoyranli.com/cdn/fut-player-card/img/card_bg.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding: 1%;
+    position: absolute;
+}
+
+/* Player positions */
+.LW { top: 33%; left: 33%; }
+.ST { top: 30%; left: 47%; }
+.RW { top: 33%; right: 30%; }
+
+.LM { top: 44%; left: 34%; }
+.CM { top: 42%; left: 47%; }
+.RM { top: 44%; right: 34%; }
+
+.LB { top: 50%; left: 20%; }
+.CB2 { top: 55%; left: 36%; }
+.CB1 { top: 55%; right: 36%; }
+.RB { top: 50%; right: 20%; }
+
+.GK { top: 63%; left: 47%; }
+
+
+
+.sliderDiv {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.slider {
+    display: flex;
+    width: 100%;
+}
+
+.filled {
+    img[alt="Add"] {
+        display: none;
+    }
+}

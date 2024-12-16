@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Player Card</title>
+<link rel="icon" href="assets/media/logo.png"/>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+<h1>Player Cards</h1>
+
+<div class="players">
+    <div class="GK"></div>
+    <div class="LB"></div>
+    <div class="CB"></div>
+    <div class="CB"></div>
+    <div class="RB"></div>
+    <div class="LM"></div>
+    <div class="CDM"></div>
+    <div class="RM"></div>
+    <div class="LW"></div>
+    <div class="ST"></div>
+    <div class="RW"></div>
+</div>
+
+<button id="openModalBtn">Open Modal</button>
+
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form id="playerForm">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="photo">Photo:</label><br>
+        <input type="text" id="photo" name="photo"><br>
+        <label for="position">Position:</label><br>
+        <select id="position" name="position">
+            <option value="GK">Goalkeeper</option>
+            <option value="LB">Left Back</option>
+            <option value="CB">Center Back</option>
+            <option value="RB">Right Back</option>
+            <option value="LM">Left Midfielder</option>
+            <option value="CDM">Central Defensive Midfielder</option>
+            <option value="RM">Right Midfielder</option>
+            <option value="LW">Left Winger</option>
+            <option value="ST">Striker</option>
+            <option value="RW">Right Winger</option>
+        </select><br>
+        <label for="nationality">Nationality:</label><br>
+        <input type="text" id="nationality" name="nationality"><br>
+        <label for="flag">Flag:</label><br>
+        <input type="text" id="flag" name="flag"><br>
+        <label for="club">Club:</label><br>
+        <input type="text" id="club" name="club"><br>
+        <label for="logo">Logo:</label><br>
+        <input type="text" id="logo" name="logo"><br>
+        <label for="rating">Rating:</label><br>
+        <input type="number" id="rating" name="rating"><br>
+        <label for="pace">Pace:</label><br>
+        <input type="number" id="pace" name="pace"><br>
+        <label for="shooting">Shooting:</label><br>
+        <input type="number" id="shooting" name="shooting"><br>
+        <label for="passing">Passing:</label><br>
+        <input type="number" id="passing" name="passing"><br>
+        <label for="dribbling">Dribbling:</label><br>
+        <input type="number" id="dribbling" name="dribbling"><br>
+        <label for="defending">Defending:</label><br>
+        <input type="number" id="defending" name="defending"><br>
+        <label for="physical">Physical:</label><br>
+        <input type="number" id="physical" name="physical"><br>
+        <label for="diving">Diving:</label><br>
+        <input type="number" id="diving" name="diving"><br>
+        <label for="handling">Handling:</label><br>
+        <input type="number" id="handling" name="handling"><br>
+        <label for="kicking">Kicking:</label><br>
+        <input type="number" id="kicking" name="kicking"><br>
+        <label for="reflexes">Reflexes:</label><br>
+        <input type="number" id="reflexes" name="reflexes"><br>
+        <label for="speed">Speed:</label><br>
+        <input type="number" id="speed" name="speed"><br>
+        <label for="positioning">Positioning:</label><br>
+        <input type="number" id="positioning" name="positioning"><br>
+        <input type="submit" value="Submit">
+    </form>
+  </div>
+</div>
+
+<div id="playerSlider"></div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+    
+    savedPlayers.forEach(player => {
+        populatePlayerCard(player);
+    });
+});
+
+// Listen for form submission
+document.getElementById('playerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const playerData = {
+        name: document.getElementById('name').value.trim(),
+        photo: document.getElementById('photo').value.trim(),
+        position: document.getElementById('position').value.trim(),
+        nationality: document.getElementById('nationality').value.trim(),
+        flag: document.getElementById('flag').value.trim(),
+        club: document.getElementById('club').value.trim(),
+        logo: document.getElementById('logo').value.trim(),
+        rating: document.getElementById('rating').value.trim(),
+        pace: document.getElementById('pace').value.trim(),
+        shooting: document.getElementById('shooting').value.trim(),
+        passing: document.getElementById('passing').value.trim(),
+        dribbling: document.getElementById('dribbling').value.trim(),
+        defending: document.getElementById('defending').value.trim(),
+        physical: document.getElementById('physical').value.trim(),
+        diving: document.getElementById('diving').value.trim(),
+        handling: document.getElementById('handling').value.trim(),
+        kicking: document.getElementById('kicking').value.trim(),
+        reflexes: document.getElementById('reflexes').value.trim(),
+        speed: document.getElementById('speed').value.trim(),
+        positioning: document.getElementById('positioning').value.trim(),
+    };
+
+    // Validate the inputs (validation code remains the same)
+    // ...
+
+    const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+    const existingIndex = savedPlayers.findIndex(p => p.position === playerData.position);
+
+    if (existingIndex !== -1) {
+        // If a player already exists in this position, move them to substitutes
+        const existingPlayer = savedPlayers[existingIndex];
+        existingPlayer.previousPosition = existingPlayer.position;
+        existingPlayer.position = 'SUB';
+        savedPlayers[existingIndex] = playerData;
+        savedPlayers.push(existingPlayer);
+    } else {
+        savedPlayers.push(playerData);
+    }
+    localStorage.setItem('players', JSON.stringify(savedPlayers));
+
+    populatePlayerCard(playerData);
+    updateSubstitutesOverlay();
+
+    CloseModal();
+    e.target.reset();
+});
+
+// Function to populate a player card
+function populatePlayerCard(player) {
+    const { position, name, photo, nationality, flag, club, logo, rating, diving, handling, kicking, reflexes, speed, positioning, pace, shooting, passing, dribbling, defending, physical } = player;
+
+    if (!position || position === 'SUB') {
+        return;
+    }
+
+    const positionCard = document.querySelector(`.players .${position}`);
+
+    if (!positionCard) {
+        console.error('Position card not found for position:', position);
+        return;
+    }
+
+    let cardHTML = `
+        <div class="player-card filled">
+            <img src="${photo}" alt="${name}">
+            <h3>${name}</h3>
+            <p>Position: ${position}</p>
+            <button onclick="deletePlayerCard('${position}')" class="delete-button">X</button>
+        </div>
+    `;
+    positionCard.innerHTML = cardHTML;
+}
+
+// Function to delete a player card
+function deletePlayerCard(position) {
+    const positionCard = document.querySelector(`.players .${position}`);
+    if (!positionCard) return;
+
+    positionCard.innerHTML = '';
+    positionCard.classList.remove('filled');
+
+    const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+    const updatedPlayers = savedPlayers.filter((player) => player.position !== position);
+    localStorage.setItem('players', JSON.stringify(updatedPlayers));
+
+    updateSubstitutesOverlay();
+}
+
+// Function to update the substitutes overlay
+function updateSubstitutesOverlay() {
+    const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+    const substitutes = savedPlayers.filter(player => player.position === 'SUB');
+    const playerSlider = document.getElementById('playerSlider');
+
+    playerSlider.innerHTML = '';
+
+    substitutes.forEach(player => {
+        // Create player card HTML for substitute (similar to the existing card creation)
+        let cardHTML = `
+            <div class="relative w-[300px] h-[485px] scale-[0.8] bg-cover bg-center p-[2.5rem] z-10" style="background-image: url('https://selimdoyranli.com/cdn/fut-player-card/img/card_bg.png');">
+                <!-- Player card content (similar to the existing card) -->
+                <!-- ... -->
+                <button onclick="movePlayerToField('${player.name}', '${player.previousPosition}')" class="mt-2 bg-blue-500 text-white p-2 rounded">
+                    Move to ${player.previousPosition}
+                </button>
+            </div>
+        `;
+        playerSlider.innerHTML += cardHTML;
+    });
+}
+
+// Function to move a player from substitutes to the field
+function movePlayerToField(playerName, position) {
+    const savedPlayers = JSON.parse(localStorage.getItem('players')) || [];
+    const playerIndex = savedPlayers.findIndex(p => p.name === playerName && p.position === 'SUB');
+    const fieldPlayerIndex = savedPlayers.findIndex(p => p.position === position);
+
+    if (playerIndex !== -1 && fieldPlayerIndex !== -1) {
+        // Swap positions
+        const subPlayer = savedPlayers[playerIndex];
+        const fieldPlayer = savedPlayers[fieldPlayerIndex];
+
+        subPlayer.position = position;
+        fieldPlayer.position = 'SUB';
+        fieldPlayer.previousPosition = position;
+
+        savedPlayers[playerIndex] = subPlayer;
+        savedPlayers[fieldPlayerIndex] = fieldPlayer;
+
+        localStorage.setItem('players', JSON.stringify(savedPlayers));
+
+        // Update the display
+        populatePlayerCard(subPlayer);
+        updateSubstitutesOverlay();
+    }
+}
+
+// Modal functions
+var modal = document.getElementById("myModal");
+var btn = document.getElementById("openModalBtn");
+var span = document.getElementsByClassName("close")[0];
+
+function OpenModal() {
+  modal.style.display = "block";
+}
+
+function CloseModal() {
+  modal.style.display = "none";
+}
+
+btn.onclick = OpenModal;
+span.onclick = CloseModal;
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    CloseModal();
+  }
+}
+</script>
+
+</body>
+</html>
+
